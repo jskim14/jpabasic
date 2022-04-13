@@ -1,11 +1,15 @@
 package bong.lines.sample;
 
+import bong.lines.sample.entity.Member;
+
 import javax.persistence.*;
+import java.util.List;
 
 public class JPAMain {
+
     public static void main(String[] args) {
 
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("hello");
+        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("wings-persistence");
 
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
@@ -15,14 +19,35 @@ public class JPAMain {
 
         try{
 
-            Member member = new Member();
-            member.setId(2L);
-            member.setName("Hello");
-            entityManager.persist(member);
+//            Member member1 = entityManager.find(Member.class, 1L);
+
+//            Member member = new Member();
+//           // member.setId(2L);
+//            member.setUsername("Hong Gil Dong");
+//            entityManager.persist(member);
+
+//         ------------ update
+            // from Member에서 Member는 객체임
+//            Member member = entityManager.createQuery("select m from Member as m", Member.class)
+//                    .setFirstResult(1)
+//                    .setMaxResults(10)
+//                    .getResultList().get(0);
+//            member.setUsername("Seung Hwa");
+
+//            ----------- 삭제
+            Member member = entityManager.find(Member.class, 1L); //삭제할 것을 먼저 찾고 삭제함
+
+            entityManager.remove(member);
+
+            entityTransaction.commit();
 
         }catch (Exception exception){
+
+            System.err.println(exception.getLocalizedMessage());
+
             entityTransaction.rollback();
         }finally {
+            System.out.println("처리완료");
             entityManager.close();
         }
 
