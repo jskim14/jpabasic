@@ -1,56 +1,40 @@
 package bong.lines.sample;
 
-import bong.lines.sample.entity.Member;
-
-import javax.persistence.*;
-import java.util.List;
+import bong.lines.comm.TransactionTemplate;
+import bong.lines.sample.entity.MemberBasic;
+import bong.lines.sample.entity.RSVNDTLEntity;
+import bong.lines.sample.entity.RSVNMSTEntity;
+import bong.lines.sample.operation.BasicSample;
 
 public class JPAMain {
-
     public static void main(String[] args) {
+        //Basic sample
+//        new TransactionTemplate(new BasicSample()).process();
 
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("wings-persistence");
+//        new TransactionTemplate(entityManager -> {
+//            MemberBasic memberBasic = new MemberBasic();
+//            memberBasic.setUsername("Seung Hwa");
+//            entityManager.persist(memberBasic);
+//            entityManager.merge(memberBasic);
+//        });
 
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        new TransactionTemplate((entityManager -> {
+            RSVNMSTEntity rsvnmstEntity = new RSVNMSTEntity();
+            rsvnmstEntity.setRsvnNo(1L);
 
-        EntityTransaction entityTransaction = entityManager.getTransaction();
+            entityManager.persist(rsvnmstEntity);
 
-        entityTransaction.begin();
+            RSVNDTLEntity rsvndtlEntity = new RSVNDTLEntity();
+            rsvndtlEntity.setRsvnmstEntity(rsvnmstEntity);
+            rsvndtlEntity.setId(5L);
 
-        try{
+            entityManager.persist(rsvndtlEntity);
 
-//            Member member1 = entityManager.find(Member.class, 1L);
+            RSVNDTLEntity rsvnEntity = entityManager.find(RSVNDTLEntity.class, 5L);
+            rsvnEntity.getRsvnmstEntity();
 
-//            Member member = new Member();
-//           // member.setId(2L);
-//            member.setUsername("Hong Gil Dong");
-//            entityManager.persist(member);
-
-//         ------------ update
-            // from Member에서 Member는 객체임
-//            Member member = entityManager.createQuery("select m from Member as m", Member.class)
-//                    .setFirstResult(1)
-//                    .setMaxResults(10)
-//                    .getResultList().get(0);
-//            member.setUsername("Seung Hwa");
-
-//            ----------- 삭제
-            Member member = entityManager.find(Member.class, 1L); //삭제할 것을 먼저 찾고 삭제함
-
-            entityManager.remove(member);
-
-            entityTransaction.commit();
-
-        }catch (Exception exception){
-
-            System.err.println(exception.getLocalizedMessage());
-
-            entityTransaction.rollback();
-        }finally {
-            System.out.println("처리완료");
-            entityManager.close();
-        }
-
-        entityManagerFactory.close();
+            System.out.println("rsvnEntity.getRsvnmstEntity = "+ rsvnEntity.getRsvnmstEntity().getRsvnNo());
+            //RSVNDTLEntity rsvndtlEntity = entityManager.find(RSVNDTLEntity.class, rsvnEntity.getRsvnNo());
+        })).process();
     }
 }

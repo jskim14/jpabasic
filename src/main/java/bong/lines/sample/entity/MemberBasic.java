@@ -1,9 +1,10 @@
 package bong.lines.sample.entity;
+
 import javax.persistence.*;
 
-//@Entity
-@Table(name = "MEMBER")
-public class Member {
+@Entity
+@Table(name = "MEMBER_BASIC" )
+public class MemberBasic {
 
     @Id
     @GeneratedValue
